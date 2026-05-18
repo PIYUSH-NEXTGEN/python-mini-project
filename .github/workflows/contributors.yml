@@ -43,11 +43,11 @@ jobs:
           echo "Fetching contributors from GitHub API..."
           while true; do
             # Scaling: Handle pagination to fetch all contributors.
-            # Security: Using standard GH API with timeouts.
-            gh api --timeout 30s "/repos/${{ github.repository }}/contributors?per_page=100&page=${PAGE}" > "response_${PAGE}.json" || {
+            # Security: Using standard GH API with Linux timeout utility.
+            timeout 30s gh api "/repos/${{ github.repository }}/contributors?per_page=100&page=${PAGE}" > "response_${PAGE}.json" || {
               echo "API call failed or timed out. Retrying once..."
               sleep 5
-              gh api --timeout 60s "/repos/${{ github.repository }}/contributors?per_page=100&page=${PAGE}" > "response_${PAGE}.json"
+              timeout 60s gh api "/repos/${{ github.repository }}/contributors?per_page=100&page=${PAGE}" > "response_${PAGE}.json"
             }
             
             COUNT=$(jq '. | length' "response_${PAGE}.json")
